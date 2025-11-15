@@ -1,7 +1,4 @@
-import { ProposalCard } from '@/components/governance/ProposalCard';
-import { ReasoningAccordion } from '@/components/governance/ReasoningAccordion';
 import { Card } from '@/components/ui/card';
-import { aiProposals } from '@/lib/mockData';
 
 const Governance = () => {
   return (
@@ -15,30 +12,15 @@ const Governance = () => {
         </p>
       </div>
 
-      <div className="space-y-8">
-        {aiProposals.map((proposal) => (
-          <div key={proposal.id} className="space-y-4">
-            <ProposalCard
-              market={proposal.market}
-              direction={proposal.direction as 'LONG' | 'SHORT'}
-              positionSize={proposal.positionSize}
-              riskScore={proposal.riskScore}
-              confidence={proposal.confidence}
-              status={proposal.status as 'PENDING' | 'APPROVED' | 'EXECUTED'}
-              summary={proposal.summary}
-              timestamp={proposal.timestamp}
-            />
-
-            <Card className="glass-card p-6">
-              <h3 className="text-lg font-semibold mb-4">Multi-Agent Analysis</h3>
-              <ReasoningAccordion
-                reasoning={proposal.reasoning}
-                dataSources={proposal.dataSources}
-              />
-            </Card>
-          </div>
-        ))}
-      </div>
+      <Card className="glass-card p-8 text-center">
+        <h3 className="text-2xl font-semibold mb-4">No Active Proposals</h3>
+        <p className="text-muted-foreground mb-4">
+          AI agent proposals and governance decisions will appear here once the vault is operational.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          All proposals will be fetched from on-chain governance contracts and displayed in real-time.
+        </p>
+      </Card>
 
       <Card className="glass-card p-6">
         <h3 className="text-lg font-semibold mb-4">How AI Governance Works</h3>

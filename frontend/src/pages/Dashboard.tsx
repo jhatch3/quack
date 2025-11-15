@@ -1,17 +1,32 @@
-import { MetricCard } from '@/components/MetricCard';
-import { LineChart } from '@/components/charts/LineChart';
-import { BarChart } from '@/components/charts/BarChart';
 import { Card } from '@/components/ui/card';
-import { DollarSign, Users, TrendingUp, Activity } from 'lucide-react';
-import { 
-  vaultStats, 
-  navHistory, 
-  marketAllocations, 
-  pnlHistogram,
-  currentPositions 
-} from '@/lib/mockData';
+import { useState, useEffect } from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { fetchUserDeposit } from '@/lib/api';
+import { useSolBalance } from '@/hooks/useSolBalance';
+import { useUSDCBalance } from '@/hooks/useUSDCBalance';
+import { WalletAssets } from '@/components/WalletAssets';
 
 const Dashboard = () => {
+  const { publicKey } = useWallet();
+  const { balance: solBalance } = useSolBalance();
+  const { balance: usdcBalance } = useUSDCBalance();
+  const [depositedAmount, setDepositedAmount] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchDeposit = async () => {
+      if (!publicKey) {
+        setDepositedAmount(0);
+        return;
+      }
+
+      // fetchUserDeposit handles errors internally and returns 0
+      const deposit = await fetchUserDeposit(publicKey.toString());
+      setDepositedAmount(deposit);
+    };
+
+    fetchDeposit();
+  }, [publicKey]);
+
   return (
     <div className="container mx-auto px-4 py-12 space-y-12">
       <div className="text-center space-y-4">
@@ -23,113 +38,73 @@ const Dashboard = () => {
         </p>
       </div>
 
-      {/* Top Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard
-          title="Total Value Locked"
-          value={`$${vaultStats.totalValueLocked.toLocaleString()}`}
-          icon={DollarSign}
-          trend="up"
-          trendValue="24h: +$14,293"
-        />
-        <MetricCard
-          title="Number of Depositors"
-          value={vaultStats.numberOfDepositors.toLocaleString()}
-          icon={Users}
-          subtitle="Active participants"
-        />
-        <MetricCard
-          title="Strategy Win Rate"
-          value={`${vaultStats.strategyWinRate}%`}
-          icon={TrendingUp}
-          trend="up"
-          trendValue="Last 30 days"
-        />
-        <MetricCard
-          title="24h PnL"
-          value={`$${vaultStats.pnl24h.toLocaleString()}`}
-          icon={Activity}
-          trend="up"
-          trendValue="+0.52%"
-        />
-      </div>
-
-      {/* Charts Row 1 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="glass-card p-6">
-          <h3 className="text-lg font-semibold mb-4">NAV Over Time</h3>
-          <LineChart
-            data={navHistory}
-            dataKey="nav"
-            xAxisKey="date"
-            color="hsl(270 91% 65%)"
-          />
+      {!publicKey ? (
+        <Card className="glass-card p-8 text-center">
+          <h3 className="text-2xl font-semibold mb-4">Connect Your Wallet</h3>
+          <p className="text-muted-foreground">
+            Please connect your wallet to view your dashboard and vault statistics.
+          </p>
         </Card>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="glass-card p-6">
+              <h3 className="text-lg font-semibold mb-4">SOL Balance</h3>
+              <div className="text-3xl font-bold mb-2">
+                {solBalance !== null ? `${solBalance.toFixed(4)} SOL` : 'Loading...'}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {solBalance !== null ? `≈ $${(solBalance * 150).toFixed(2)} USD` : ''}
+              </p>
+            </Card>
 
-        <Card className="glass-card p-6">
-          <h3 className="text-lg font-semibold mb-4">Allocation by Market Type</h3>
-          <BarChart
-            data={marketAllocations}
-            dataKey="allocation"
-            xAxisKey="market"
-            color="hsl(220 91% 60%)"
-          />
-        </Card>
-      </div>
+            <Card className="glass-card p-6">
+              <h3 className="text-lg font-semibold mb-4">USDC Balance</h3>
+              <div className="text-3xl font-bold mb-2">
+                {usdcBalance !== null ? `${usdcBalance.toFixed(2)} USDC` : 'Loading...'}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {usdcBalance !== null ? `≈ $${usdcBalance.toFixed(2)} USD` : ''}
+              </p>
+            </Card>
 
-      {/* Charts Row 2 */}
-      <Card className="glass-card p-6">
-        <h3 className="text-lg font-semibold mb-4">PnL Distribution</h3>
-        <BarChart
-          data={pnlHistogram}
-          dataKey="count"
-          xAxisKey="range"
-          color="hsl(180 91% 60%)"
-          height={250}
-        />
-      </Card>
+            <Card className="glass-card p-6">
+              <h3 className="text-lg font-semibold mb-4">Deposited in Vault</h3>
+              <div className="text-3xl font-bold mb-2">
+                {depositedAmount > 0 ? `${depositedAmount.toFixed(4)} SOL` : '0.0000 SOL'}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {depositedAmount > 0 ? `≈ $${(depositedAmount * 150).toFixed(2)} USD` : 'No deposits yet'}
+              </p>
+            </Card>
+          </div>
 
-      {/* Current Positions */}
-      <Card className="glass-card p-6">
-        <h3 className="text-lg font-semibold mb-4">Current Open Positions</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Market</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Side</th>
-                <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">Size</th>
-                <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">Entry</th>
-                <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">Current</th>
-                <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">PnL</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentPositions.map((position, index) => (
-                <tr key={index} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                  <td className="py-3 px-4 font-medium">{position.market}</td>
-                  <td className="py-3 px-4">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      position.side === 'LONG' 
-                        ? 'bg-green-500/20 text-green-500' 
-                        : 'bg-red-500/20 text-red-500'
-                    }`}>
-                      {position.side}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-right">{position.size}</td>
-                  <td className="py-3 px-4 text-right text-muted-foreground">{position.entryPrice}</td>
-                  <td className="py-3 px-4 text-right">{position.currentPrice}</td>
-                  <td className="py-3 px-4 text-right">
-                    <div className="text-green-500 font-medium">{position.pnl}</div>
-                    <div className="text-xs text-muted-foreground">{position.pnlValue}</div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+          {/* All Wallet Assets */}
+          <WalletAssets />
+
+          {depositedAmount === 0 && (
+            <Card className="glass-card p-8 text-center">
+              <h3 className="text-2xl font-semibold mb-4">No Vault Activity Yet</h3>
+              <p className="text-muted-foreground mb-4">
+                Vault statistics, positions, and performance data will appear here once you make a deposit.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Visit the Deposit page to stake your SOL and start earning returns.
+              </p>
+            </Card>
+          )}
+
+          {depositedAmount > 0 && (
+            <Card className="glass-card p-8 text-center">
+              <h3 className="text-2xl font-semibold mb-4">Vault Statistics</h3>
+              <p className="text-muted-foreground">
+                Detailed vault performance metrics, positions, and trading activity will be displayed here.
+                This data will be fetched from on-chain sources once the vault is operational.
+              </p>
+            </Card>
+          )}
+        </>
+      )}
     </div>
   );
 };

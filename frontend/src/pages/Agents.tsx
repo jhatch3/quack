@@ -1,7 +1,4 @@
-import { AgentCard } from '@/components/agents/AgentCard';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { agentPersonas, debateTranscript } from '@/lib/mockData';
 
 const Agents = () => {
   return (
@@ -15,60 +12,14 @@ const Agents = () => {
         </p>
       </div>
 
-      {/* Agent Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {agentPersonas.map((agent) => (
-          <AgentCard
-            key={agent.id}
-            name={agent.name}
-            role={agent.role}
-            avatar={agent.avatar}
-            description={agent.description}
-            specialty={agent.specialty}
-            winRate={agent.winRate}
-          />
-        ))}
-      </div>
-
-      {/* Live Debate Transcript */}
-      <Card className="glass-card p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-2xl font-semibold">Live Agent Debate</h3>
-          <Badge className="bg-green-500/20 text-green-500">
-            <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse" />
-            Active Discussion
-          </Badge>
-        </div>
-
-        <div className="space-y-4">
-          {debateTranscript.messages.map((message, index) => (
-            <div
-              key={index}
-              className="p-4 rounded-lg border border-border hover:border-primary/50 transition-colors"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
-                  <div className="font-semibold">{message.agent}</div>
-                  <Badge
-                    className={
-                      message.vote === 'YES'
-                        ? 'bg-green-500/20 text-green-500'
-                        : 'bg-red-500/20 text-red-500'
-                    }
-                  >
-                    {message.vote}
-                  </Badge>
-                </div>
-                <span className="text-xs text-muted-foreground font-mono">
-                  {message.timestamp}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {message.message}
-              </p>
-            </div>
-          ))}
-        </div>
+      <Card className="glass-card p-8 text-center">
+        <h3 className="text-2xl font-semibold mb-4">Agent Information</h3>
+        <p className="text-muted-foreground mb-4">
+          Agent profiles, performance metrics, and live debate transcripts will be displayed here once the vault is operational.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          All agent data will be fetched from on-chain sources and AI system logs.
+        </p>
       </Card>
 
       {/* System Architecture */}

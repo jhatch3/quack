@@ -5,9 +5,11 @@ import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { ArrowDown, Wallet } from 'lucide-react';
 import { toast } from 'sonner';
+import { useSolBalance } from '@/hooks/useSolBalance';
 
 export const DepositCard = () => {
   const { connected, publicKey } = useWallet();
+  const { balance, loading } = useSolBalance();
   const [depositAmount, setDepositAmount] = useState('');
 
   const vaultSharePrice = 1.0847;
@@ -51,7 +53,7 @@ export const DepositCard = () => {
               {publicKey.toString().slice(0, 8)}...{publicKey.toString().slice(-8)}
             </div>
             <div className="text-xs text-muted-foreground">
-              Balance: ~5.23 SOL
+              Balance: {loading ? 'Loading...' : balance !== null ? `~${balance.toFixed(2)} SOL` : 'N/A'}
             </div>
           </div>
         )}
@@ -88,8 +90,13 @@ export const DepositCard = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setDepositAmount('5.23')}
+                onClick={() => {
+                  if (balance !== null) {
+                    setDepositAmount(balance.toFixed(4));
+                  }
+                }}
                 className="flex-1"
+                disabled={balance === null || loading}
               >
                 MAX
               </Button>

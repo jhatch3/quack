@@ -1,11 +1,28 @@
 import { DepositCard } from '@/components/DepositCard';
-import { MetricCard } from '@/components/MetricCard';
-import { LineChart } from '@/components/charts/LineChart';
 import { Card } from '@/components/ui/card';
-import { DollarSign, Users, TrendingUp, Coins } from 'lucide-react';
-import { vaultStats, tvlHistory } from '@/lib/mockData';
+import { useState, useEffect } from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { fetchUserDeposit } from '@/lib/api';
 
 const Deposit = () => {
+  const { publicKey } = useWallet();
+  const [depositedAmount, setDepositedAmount] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchDeposit = async () => {
+      if (!publicKey) {
+        setDepositedAmount(0);
+        return;
+      }
+
+      // fetchUserDeposit handles errors internally and returns 0
+      const deposit = await fetchUserDeposit(publicKey.toString());
+      setDepositedAmount(deposit);
+    };
+
+    fetchDeposit();
+  }, [publicKey]);
+
   return (
     <div className="container mx-auto px-4 py-12 space-y-12">
       <div className="text-center space-y-4">
@@ -25,40 +42,21 @@ const Deposit = () => {
 
         {/* Right Column - Vault Stats */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <MetricCard
-              title="Total Vault Liquidity"
-              value={`$${vaultStats.totalValueLocked.toLocaleString()}`}
-              icon={DollarSign}
-            />
-            <MetricCard
-              title="Number of Depositors"
-              value={vaultStats.numberOfDepositors.toLocaleString()}
-              icon={Users}
-            />
-            <MetricCard
-              title="Vault Share Price"
-              value={`${vaultStats.vaultSharePrice.toFixed(4)} SOL`}
-              subtitle="Current NAV per share"
-              icon={Coins}
-            />
-            <MetricCard
-              title="Your Deposited Amount"
-              value={`${vaultStats.userDepositedAmount.toFixed(2)} SOL`}
-              subtitle={`${vaultStats.userVaultShares.toFixed(4)} shares`}
-              icon={TrendingUp}
-            />
-          </div>
-
           <Card className="glass-card p-6">
-            <h3 className="text-lg font-semibold mb-4">Total Value Locked Over Time</h3>
-            <LineChart
-              data={tvlHistory}
-              dataKey="value"
-              xAxisKey="date"
-              color="hsl(270 91% 65%)"
-              height={300}
-            />
+            <h3 className="text-lg font-semibold mb-4">Your Deposit Status</h3>
+            <div className="space-y-4">
+              <div>
+                <div className="text-sm text-muted-foreground mb-1">Total Deposited</div>
+                <div className="text-2xl font-bold">
+                  {depositedAmount > 0 ? `${depositedAmount.toFixed(4)} SOL` : '0.0000 SOL'}
+                </div>
+              </div>
+              {depositedAmount === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  You haven't made any deposits yet. Use the deposit form to stake your SOL.
+                </p>
+              )}
+            </div>
           </Card>
 
           <Card className="glass-card p-6">
