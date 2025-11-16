@@ -1,11 +1,15 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { WalletConnectButton } from './WalletConnectButton';
 import { useWalletContext } from '@/contexts/WalletContext';
-import { LayoutDashboard, FileText, Users, Building2 } from 'lucide-react';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { LayoutDashboard, FileText, Users, Building2, ArrowDown } from 'lucide-react';
+import { Button } from './ui/button';
 
 export const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { hasCompletedOnboarding } = useWalletContext();
+  const { connected } = useWallet();
   
   const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -17,6 +21,16 @@ export const Navbar = () => {
   // Don't show full nav on landing page or if not opted in
   const isLandingPage = location.pathname === '/';
   const showFullNav = hasCompletedOnboarding && !isLandingPage;
+
+  const handleDepositClick = () => {
+    if (connected) {
+      navigate('/deposit');
+    } else {
+      // If wallet not connected, could trigger wallet modal
+      // For now, just navigate to deposit page
+      navigate('/deposit');
+    }
+  };
 
   return (
     <nav className="border-b border-border/50 glass-card sticky top-0 z-50 backdrop-blur-md bg-background/80">
@@ -60,7 +74,15 @@ export const Navbar = () => {
           )}
 
           {showFullNav && (
-            <div className="flex items-center">
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={handleDepositClick}
+                className="bg-gradient-evergreen hover:opacity-90 text-white font-semibold px-4 py-2 rounded-lg transition-all shadow-lg hover:shadow-xl"
+              >
+                <ArrowDown className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Deposit Now</span>
+                <span className="sm:hidden">Deposit</span>
+              </Button>
               <WalletConnectButton />
             </div>
           )}
