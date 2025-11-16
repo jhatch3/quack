@@ -1,12 +1,11 @@
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { TrendingUp, TrendingDown, AlertCircle, CheckCircle, XCircle, ExternalLink } from 'lucide-react';
+import { TrendingUp, TrendingDown, CheckCircle, XCircle, ExternalLink } from 'lucide-react';
 
 interface ProposalCardProps {
   market: string;
   direction: 'LONG' | 'SHORT';
   positionSize: string;
-  riskScore: number;
   confidence: number;
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXECUTED';
   summary: string;
@@ -20,7 +19,6 @@ export const ProposalCard = ({
   market,
   direction,
   positionSize,
-  riskScore,
   confidence,
   status,
   summary,
@@ -82,36 +80,29 @@ export const ProposalCard = ({
         <Badge className={statusColors[status]}>{status}</Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <div>
-          <div className="text-sm text-muted-foreground">Total Position Size</div>
-          <div className="font-semibold">{positionSize}</div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+        <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
+          <div className="text-xs text-muted-foreground mb-1">Position Size</div>
+          <div className="text-lg font-bold text-foreground">{positionSize}</div>
         </div>
-        <div>
-          <div className="text-sm text-muted-foreground">Risk Score</div>
-          <div className="font-semibold flex items-center gap-1">
-            <AlertCircle className="w-4 h-4 text-yellow-500" />
-            {riskScore.toFixed(1)}/10
-          </div>
+        <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
+          <div className="text-xs text-muted-foreground mb-1">Confidence</div>
+          <div className="text-lg font-bold text-primary">{confidence}%</div>
         </div>
-        <div>
-          <div className="text-sm text-muted-foreground">Confidence</div>
-          <div className="font-semibold text-primary">{confidence}%</div>
-        </div>
-        <div>
-          <div className="text-sm text-muted-foreground">Bet Status</div>
+        <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
+          <div className="text-xs text-muted-foreground mb-1">Bet Status</div>
           <div className="font-semibold flex flex-col gap-1">
-            <span className={betStatusTextColors[betStatus]}>
+            <span className={`text-base ${betStatusTextColors[betStatus]}`}>
               {betStatus === 'OPEN' ? 'Open Bet' : 'Closed Bet'}
             </span>
             {betStatus === 'CLOSED' && betResult && (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 mt-1">
                 {betResult === 'WIN' ? (
-                  <CheckCircle className="w-3 h-3 text-green-500" />
+                  <CheckCircle className="w-4 h-4 text-green-500" />
                 ) : (
-                  <XCircle className="w-3 h-3 text-red-500" />
+                  <XCircle className="w-4 h-4 text-red-500" />
                 )}
-                <span className={`text-sm ${betResultTextColors[betResult]}`}>
+                <span className={`text-sm font-medium ${betResultTextColors[betResult]}`}>
                   {betResult === 'WIN' ? 'Won' : 'Lost'}
                 </span>
               </div>

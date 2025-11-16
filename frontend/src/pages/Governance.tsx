@@ -13,7 +13,7 @@ import {
   type Proposal,
   type DebateTranscript
 } from '@/lib/api';
-import { TrendingUp, TrendingDown, AlertCircle, CheckCircle, XCircle, ExternalLink } from 'lucide-react';
+import { TrendingUp, TrendingDown, CheckCircle, XCircle } from 'lucide-react';
 
 const Governance = () => {
   const [proposals, setProposals] = useState<Proposal[]>([]);
@@ -123,33 +123,28 @@ const Governance = () => {
                   </Badge>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
-                  <div>
-                    <div className="text-xs sm:text-sm text-muted-foreground mb-1">Bet Side</div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
+                  <div className="p-3 sm:p-4 rounded-lg bg-muted/30 border border-border/50">
+                    <div className="text-xs sm:text-sm text-muted-foreground mb-2">Bet Side</div>
                     <div className="font-semibold">
-                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                      <span className={`inline-flex items-center px-3 py-1.5 rounded-md text-sm font-semibold ${
                         proposal.vote === 'YES' 
-                          ? 'bg-green-500/20 text-green-500' 
-                          : 'bg-red-500/20 text-red-500'
+                          ? 'bg-green-500/20 text-green-500 border border-green-500/30' 
+                          : 'bg-red-500/20 text-red-500 border border-red-500/30'
                       }`}>
                         {proposal.vote}
                       </span>
                     </div>
                   </div>
-                  <div>
-                    <div className="text-xs sm:text-sm text-muted-foreground mb-1">Position Size</div>
-                    <div className="font-semibold text-sm sm:text-base break-words">{proposal.positionSize}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs sm:text-sm text-muted-foreground mb-1">Risk Score</div>
-                    <div className="font-semibold flex items-center gap-1 text-sm sm:text-base">
-                      <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 flex-shrink-0" />
-                      <span>{proposal.riskScore.toFixed(1)}/10</span>
+                  <div className="p-3 sm:p-4 rounded-lg bg-muted/30 border border-border/50">
+                    <div className="text-xs sm:text-sm text-muted-foreground mb-2">Vault Position Size</div>
+                    <div className="text-lg sm:text-xl font-bold text-foreground break-words">
+                      {proposal.positionSize} USD
                     </div>
                   </div>
-                  <div>
-                    <div className="text-xs sm:text-sm text-muted-foreground mb-1">Confidence</div>
-                    <div className="font-semibold text-primary text-sm sm:text-base">{proposal.confidence}%</div>
+                  <div className="p-3 sm:p-4 rounded-lg bg-muted/30 border border-border/50">
+                    <div className="text-xs sm:text-sm text-muted-foreground mb-2">Confidence</div>
+                    <div className="text-lg sm:text-xl font-bold text-primary">{proposal.confidence}%</div>
                   </div>
                 </div>
 
@@ -173,20 +168,6 @@ const Governance = () => {
                     )}
                   </div>
                 </div>
-
-                <div className="p-3 sm:p-4 rounded-lg bg-muted/50 border border-border mb-4">
-                  <p className="text-xs sm:text-sm leading-relaxed break-words">{proposal.summary}</p>
-                </div>
-
-                <a
-                  href="https://polymarket.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors group mb-4 text-sm sm:text-base"
-                >
-                  <span className="font-medium">View on Polymarket</span>
-                  <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform flex-shrink-0" />
-                </a>
 
                 {/* Agent Conversation */}
                 {debate && debate.messages && debate.messages.length > 0 && (

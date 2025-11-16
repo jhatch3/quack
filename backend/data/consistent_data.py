@@ -107,7 +107,7 @@ for i in range(TOTAL_BETS):
         "betResult": bet_result,
         "timestamp": bet_date.isoformat() + "Z",
         "vote": vote,
-        "positionSize": f"${random.randint(50000, 300000):,}",
+        "positionSize": f"${random.randint(100, 1000):,}",
         "riskScore": round(random.uniform(4.0, 9.0), 1),
         "confidence": random.randint(60, 90),
     })
