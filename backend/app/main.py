@@ -3,6 +3,7 @@ Main FastAPI application entry point.
 This file should only contain app setup and router registration.
 All endpoints should be organized in separate router files.
 """
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -16,9 +17,25 @@ app = FastAPI(
 )
 
 # CORS Configuration
+# Allow both localhost and Vercel deployment URLs
+allowed_origins = [
+    "http://localhost:8080",
+    "http://localhost:3000",
+]
+
+# Get VERCEL_URL from environment if available
+vercel_url = os.getenv("VERCEL_URL")
+if vercel_url:
+    allowed_origins.append(f"https://{vercel_url}")
+
+# Allow all origins in production (Vercel will handle CORS)
+# For more security, you can restrict to specific domains
+if os.getenv("VERCEL") or os.getenv("ENVIRONMENT") == "production":
+    allowed_origins = ["*"]  # Allow all in production
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],  # Frontend URL
+    allow_origins=allowed_origins if allowed_origins != ["*"] else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

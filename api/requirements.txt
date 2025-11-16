@@ -1,0 +1,10 @@
+# Requirements for Vercel serverless function
+# This file is used by Vercel to install Python dependencies for the API
+# Include all dependencies needed by the FastAPI backend
+
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+pydantic==2.9.2
+python-dotenv==1.0.1
+mangum==0.18.0
+
