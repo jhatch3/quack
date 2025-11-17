@@ -6,7 +6,7 @@ Evergreen Capital isn’t just a hackathon project — it’s a prototype for th
 Built in 24 hours. 
 
 <details>
-  <summary>📸 Click to view screenshots</summary>
+    <summary><strong>📸 View Evergreen Screenshots</strong></summary>
 
   <p align="center">
     <img src="assets/1.png" width="80%" />
